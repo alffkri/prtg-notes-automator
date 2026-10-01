@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS untuk mempercantik tampilan (Responsive & Modern Styling)
+# Custom CSS untuk merapikan layout, card, dan styling responsive
 st.markdown("""
     <style>
     .main {
@@ -36,34 +36,66 @@ st.markdown("""
     h1 {
         font-family: 'Inter', sans-serif;
         font-weight: 800;
+        font-size: 2.2rem;
         background: linear-gradient(90deg, #ff4b4b, #ffa15c);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 0px;
+    }
+    .subtitle {
+        text-align: center;
+        color: #8b949e;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+    .card-container {
+        background-color: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 20px;
+        height: 100%;
+        box-sizing: border-box;
+    }
+    .footer {
+        text-align: center;
+        color: #8b949e;
+        font-size: 0.85rem;
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 1px solid #30363d;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # Header Utama
-st.markdown("<h1 style='text-align: center;'>📝 PRTG Excel-to-Word Notes Automator</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #8b949e;'>Aplikasi web otomatis profesional untuk menyinkronkan data Downtime, Uptime, dan Keterangan dari Excel ke bagian <b>Note :</b> dokumen Word secara presisi.</p>", unsafe_allow_html=True)
-st.markdown("<hr style='border: 0.5px solid #30363d;'>", unsafe_allow_html=True)
+st.markdown("<h1>📝 PRTG Excel-to-Word Notes Automator</h1>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle'>Aplikasi web otomatis profesional untuk menyinkronkan data Downtime, Uptime, dan Keterangan dari Excel ke bagian <b>Note :</b> dokumen Word secara presisi.</p>", unsafe_allow_html=True)
 
-# Layout dengan Kolom untuk Upload File
+# Layout dengan Kolom dan Container Rapi
 col1, col2 = st.columns(2, gap="medium")
 
 with col1:
-    st.markdown("### 📄 1. Dokumen Word Mentah")
-    st.markdown("<p style='font-size: 0.85rem; color: #8b949e;'>Pilih file Word hasil generate PRTG (.docx)</p>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="card-container">
+            <h3 style="margin-top:0; font-size: 1.05rem; color: #ffffff;">📄 1. Dokumen Word Mentah</h3>
+            <p style="font-size: 0.8rem; color: #8b949e; margin-bottom: 10px;">Pilih file Word hasil generate PRTG (.docx)</p>
+        """, unsafe_allow_html=True)
     word_file = st.file_uploader("Upload Word", type=["docx"], key="word", label_visibility="collapsed")
     if word_file:
-        st.success(f"File terpilih: **{word_file.name}**")
+        st.success(f"Terpilih: **{word_file.name}**")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with col2:
-    st.markdown("### 📊 2. File Excel Olahan")
-    st.markdown("<p style='font-size: 0.85rem; color: #8b949e;'>Pilih file Excel data catatan (.xlsx)</p>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="card-container">
+            <h3 style="margin-top:0; font-size: 1.05rem; color: #ffffff;">📊 2. File Excel Olahan</h3>
+            <p style="font-size: 0.8rem; color: #8b949e; margin-bottom: 10px;">Pilih file Excel data catatan (.xlsx)</p>
+        """, unsafe_allow_html=True)
     excel_file = st.file_uploader("Upload Excel", type=["xlsx", "xls"], key="excel", label_visibility="collapsed")
     if excel_file:
-        st.success(f"File terpilih: **{excel_file.name}**")
+        st.success(f"Terpilih: **{excel_file.name}**")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -209,3 +241,10 @@ if st.button("🚀 Proses Penggabungan Note Sekarang", type="primary"):
                 st.error(f"❌ Terjadi kesalahan saat memproses: {msg}")
     else:
         st.warning("⚠️ Mohon unggah file Word mentah dan file Excel olahan terlebih dahulu pada kolom di atas!")
+
+# Footer Copyright
+st.markdown("""
+    <div class="footer">
+        © 2026 M Alif Fikri. All rights reserved.
+    </div>
+""", unsafe_allow_html=True)
