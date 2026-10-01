@@ -4,23 +4,68 @@ import pandas as pd
 from docx import Document
 from docx.shared import Pt, RGBColor, Inches
 
-# Konfigurasi Tampilan Halaman Streamlit
-st.set_page_config(page_title="PRTG Word Notes Automator", page_icon="📝", layout="centered")
+# Konfigurasi Halaman Streamlit
+st.set_page_config(
+    page_title="PRTG Word Notes Automator", 
+    page_icon="📝", 
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
-st.title("📝 PRTG Excel-to-Word Notes Automator")
-st.markdown("Aplikasi web otomatis untuk memasukkan data Downtime/Uptime/Keterangan dari Excel ke bagian `Note :` dokumen Word secara presisi.")
+# Custom CSS untuk mempercantik tampilan (Responsive & Modern Styling)
+st.markdown("""
+    <style>
+    .main {
+        background-color: #0e1117;
+        color: #fafafa;
+    }
+    .stButton>button {
+        width: 100%;
+        background-color: #ff4b4b;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #ff2b2b;
+        box-shadow: 0 4px 12px rgba(255, 75, 75, 0.4);
+    }
+    h1 {
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        background: linear-gradient(90deg, #ff4b4b, #ffa15c);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-st.markdown("---")
+# Header Utama
+st.markdown("<h1 style='text-align: center;'>📝 PRTG Excel-to-Word Notes Automator</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #8b949e;'>Aplikasi web otomatis profesional untuk menyinkronkan data Downtime, Uptime, dan Keterangan dari Excel ke bagian <b>Note :</b> dokumen Word secara presisi.</p>", unsafe_allow_html=True)
+st.markdown("<hr style='border: 0.5px solid #30363d;'>", unsafe_allow_html=True)
 
-# 1. Upload File Word Mentah
-st.subheader("1. Unggah Dokumen Word Mentah (.docx)")
-word_file = st.file_uploader("Pilih file Word hasil generate PRTG", type=["docx"], key="word")
+# Layout dengan Kolom untuk Upload File
+col1, col2 = st.columns(2, gap="medium")
 
-# 2. Upload File Excel Olahan
-st.subheader("2. Unggah File Excel Olahan (.xlsx)")
-excel_file = st.file_uploader("Pilih file Excel yang berisi data catatan (Note)", type=["xlsx", "xls"], key="excel")
+with col1:
+    st.markdown("### 📄 1. Dokumen Word Mentah")
+    st.markdown("<p style='font-size: 0.85rem; color: #8b949e;'>Pilih file Word hasil generate PRTG (.docx)</p>", unsafe_allow_html=True)
+    word_file = st.file_uploader("Upload Word", type=["docx"], key="word", label_visibility="collapsed")
+    if word_file:
+        st.success(f"File terpilih: **{word_file.name}**")
 
-st.markdown("---")
+with col2:
+    st.markdown("### 📊 2. File Excel Olahan")
+    st.markdown("<p style='font-size: 0.85rem; color: #8b949e;'>Pilih file Excel data catatan (.xlsx)</p>", unsafe_allow_html=True)
+    excel_file = st.file_uploader("Upload Excel", type=["xlsx", "xls"], key="excel", label_visibility="collapsed")
+    if excel_file:
+        st.success(f"File terpilih: **{excel_file.name}**")
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # Fungsi inti penggabungan Note
 def process_word_notes(word_path, excel_path, output_path):
@@ -134,14 +179,13 @@ def process_word_notes(word_path, excel_path, output_path):
     doc.save(output_path)
     return True, "Berhasil"
 
-# 3. Tombol Eksekusi
-if st.button("🚀 Proses Penggabungan Note", type="primary"):
+# Tombol Eksekusi Utama
+if st.button("🚀 Proses Penggabungan Note Sekarang", type="primary"):
     if word_file is not None and excel_file is not None:
-        with st.spinner("Sedang memproses dokumen Word dan mencocokkan data Excel..."):
-            # Simpan file upload secara temporary
+        with st.spinner("⏳ Sedang memproses dokumen Word dan mencocokkan data Excel secara presisi..."):
             temp_word_path = "temp_input.docx"
             temp_excel_path = "temp_input.xlsx"
-            output_word_path = "Report_Final_Dengan_Note.docx"
+            output_word_path = "Report_PRTG_Final_Dengan_Note.docx"
             
             with open(temp_word_path, "wb") as f:
                 f.write(word_file.getbuffer())
@@ -151,17 +195,17 @@ if st.button("🚀 Proses Penggabungan Note", type="primary"):
             success, msg = process_word_notes(temp_word_path, temp_excel_path, output_word_path)
             
             if success:
-                st.success("✅ Penggabungan berhasil dilakukan!")
+                st.success("🎉 Penggabungan berhasil dilakukan dengan sempurna!")
+                st.markdown("<br>", unsafe_allow_html=True)
                 
-                # Sediakan tombol download file hasil
                 with open(output_word_path, "rb") as f:
                     st.download_button(
-                        label="📥 Download Laporan Word Final",
+                        label="📥 Download Laporan Word Final (.docx)",
                         data=f,
                         file_name="Report_PRTG_Final_Dengan_Note.docx",
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     )
             else:
-                st.error(f"❌ Terjadi kesalahan: {msg}")
+                st.error(f"❌ Terjadi kesalahan saat memproses: {msg}")
     else:
-        st.warning("⚠️ Mohon unggah file Word mentah dan file Excel olahan terlebih dahulu!")
+        st.warning("⚠️ Mohon unggah file Word mentah dan file Excel olahan terlebih dahulu pada kolom di atas!")
