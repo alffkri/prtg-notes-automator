@@ -1,0 +1,5 @@
+__pycache__/
+.env
+temp_*.png
+temp_input.*
+.DS_Store
