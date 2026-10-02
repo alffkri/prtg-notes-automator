@@ -99,7 +99,7 @@ with col2:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Fungsi inti penggabungan Note
+# Fungsi inti penggabungan Note dengan Remove Space Before & After pada Paragraf Note
 def process_word_notes(word_path, excel_path, output_path):
     try:
         excel_file_obj = pd.ExcelFile(excel_path)
@@ -188,8 +188,9 @@ def process_word_notes(word_path, excel_path, output_path):
                                     p_elem.getparent().remove(p_elem)
                                 
                                 p_note_title = cell.add_paragraph()
-                                p_note_title.paragraph_format.space_before = Pt(4)
-                                p_note_title.paragraph_format.space_after = Pt(2)
+                                # REMOVE SPACE BEFORE & AFTER untuk judul Note
+                                p_note_title.paragraph_format.space_before = Pt(0)
+                                p_note_title.paragraph_format.space_after = Pt(0)
                                 run_title = p_note_title.add_run("Note :")
                                 run_title.font.name = 'Times New Roman'
                                 run_title.font.size = Pt(12)
@@ -200,8 +201,9 @@ def process_word_notes(word_path, excel_path, output_path):
                                     p_bullet = cell.add_paragraph()
                                     p_bullet.paragraph_format.left_indent = Inches(0.35)
                                     p_bullet.paragraph_format.first_line_indent = Inches(-0.2)
-                                    p_bullet.paragraph_format.space_before = Pt(2)
-                                    p_bullet.paragraph_format.space_after = Pt(4)
+                                    # REMOVE SPACE BEFORE & AFTER untuk baris-baris note agar rapat
+                                    p_bullet.paragraph_format.space_before = Pt(0)
+                                    p_bullet.paragraph_format.space_after = Pt(0)
                                     
                                     run_bullet = p_bullet.add_run(f"-  {note_text}")
                                     run_bullet.font.name = 'Times New Roman'
