@@ -70,7 +70,7 @@ st.markdown("""
 
 # Header Utama
 st.markdown("<h1>📝 PRTG Excel-to-Word Notes Automator</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>Aplikasi web otomatis profesional untuk menyinkronkan data Downtime, Uptime, dan Keterangan dari Excel ke bagian <b>Note :</b> dokumen Word secara presisi.</p>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle'>Aplikasi web otomatis profesional untuk menyinkronkan data Downtime, Uptime, Downtime Duration, dan Keterangan dari Excel ke bagian <b>Note :</b> dokumen Word secara presisi.</p>", unsafe_allow_html=True)
 
 # Layout dengan Kolom dan Container Rapi
 col1, col2 = st.columns(2, gap="medium")
@@ -99,7 +99,7 @@ with col2:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Fungsi inti penggabungan Note dengan Remove Space Before & After pada Paragraf Note
+# Fungsi inti penggabungan Note dengan 4 Kolom Data & Spasi Rapat
 def process_word_notes(word_path, excel_path, output_path):
     try:
         excel_file_obj = pd.ExcelFile(excel_path)
@@ -111,9 +111,14 @@ def process_word_notes(word_path, excel_path, output_path):
     for sheet_name in excel_file_obj.sheet_names:
         df_sheet = pd.read_excel(excel_file_obj, sheet_name=sheet_name)
         
-        required_cols = ['LOKASI', 'Downtime', 'Uptime', 'Keterangan']
+        required_cols = ['LOKASI', 'Downtime', 'Uptime', 'Downtime Duration', 'Keterangan']
         if not all(col in df_sheet.columns for col in required_cols):
-            continue
+            required_cols_alt = ['LOKASI', 'Downtime', 'Uptime', 'Keterangan']
+            if not all(col in df_sheet.columns for col in required_cols_alt):
+                continue
+            has_duration = False
+        else:
+            has_duration = True
             
         data_notes[sheet_name] = {}
         current_lokasi = None
@@ -128,10 +133,13 @@ def process_word_notes(word_path, excel_path, output_path):
                 
             downtime = str(row['Downtime']).strip()
             uptime = str(row['Uptime']).strip()
+            downtime_duration = str(row['Downtime Duration']).strip() if has_duration else ""
             keterangan = str(row['Keterangan']).strip()
             
             if downtime and downtime != "-" and downtime.lower() != "nan":
                 detail_teks = f"{downtime}     {uptime}"
+                if downtime_duration and downtime_duration.lower() != "nan" and downtime_duration != "-":
+                    detail_teks += f"     {downtime_duration}"
                 if keterangan and keterangan.lower() != "nan" and keterangan != "-":
                     detail_teks += f"     {keterangan}"
                 
@@ -188,7 +196,6 @@ def process_word_notes(word_path, excel_path, output_path):
                                     p_elem.getparent().remove(p_elem)
                                 
                                 p_note_title = cell.add_paragraph()
-                                # REMOVE SPACE BEFORE & AFTER untuk judul Note
                                 p_note_title.paragraph_format.space_before = Pt(0)
                                 p_note_title.paragraph_format.space_after = Pt(0)
                                 run_title = p_note_title.add_run("Note :")
@@ -201,7 +208,6 @@ def process_word_notes(word_path, excel_path, output_path):
                                     p_bullet = cell.add_paragraph()
                                     p_bullet.paragraph_format.left_indent = Inches(0.35)
                                     p_bullet.paragraph_format.first_line_indent = Inches(-0.2)
-                                    # REMOVE SPACE BEFORE & AFTER untuk baris-baris note agar rapat
                                     p_bullet.paragraph_format.space_before = Pt(0)
                                     p_bullet.paragraph_format.space_after = Pt(0)
                                     
